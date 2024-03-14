@@ -5,11 +5,12 @@ import numpy as np # linear algebra
 import struct
 from array import array
 from os.path  import join
+from .ImageLoader import *
 
 #
 # MNIST Data Loader Class
 #
-class MnistDataloader(object):
+class MnistDataloader(ImageLoader):
     def __init__(self, training_images_filepath,training_labels_filepath,
                  test_images_filepath, test_labels_filepath):
         self.training_images_filepath = training_images_filepath
