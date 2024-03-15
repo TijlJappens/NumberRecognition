@@ -29,7 +29,7 @@ class ModelTrainer(object):
         self.test_data_2_loader = DataLoader(test_data_2_set, batch_size=batch_size, shuffle=True)
         self.w = weight
     
-    def Test(self,model):
+    def Test(self,model,device):
         # Testing the model
         correct = 0
         total = 0
@@ -38,12 +38,14 @@ class ModelTrainer(object):
         with torch.no_grad():
             for data in self.test_data_loader:
                 inputs, labels = data
+                inputs, labels = inputs.to(device), labels.to(device)
                 outputs = model(inputs)
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
             for data in self.test_data_2_loader:
                 inputs, labels = data
+                inputs, labels = inputs.to(device), labels.to(device)
                 outputs = model(inputs)
                 _, predicted = torch.max(outputs.data, 1)
                 total_sudoku += labels.size(0)
@@ -57,6 +59,13 @@ class ModelTrainer(object):
             print("Wrong optional parameter: model_mode.")
             return
         # Set seed
+
+        if torch.cuda.is_available():  
+            dev = "cuda:0" 
+        else:  
+            dev = "cpu"  
+        device = torch.device(dev)
+
         torch.manual_seed(i)
 
         # Initialize the neural network, loss function, and optimizer
@@ -64,8 +73,9 @@ class ModelTrainer(object):
             model = ConvolutionalNN(width)
         elif model_mode=="ComplexNN":
             model = ComplexNN(width)
-        
-        criterion = nn.CrossEntropyLoss(weight = torch.FloatTensor(self.w))
+        model = model.to(device)
+        weight = torch.FloatTensor(self.w).to(device)
+        criterion = nn.CrossEntropyLoss(weight = weight)
         # Define your optimizer with L2 regularization (weight decay)
         optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.001)
         #optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -79,6 +89,8 @@ class ModelTrainer(object):
             running_loss = 0.0
             for data in self.data_loader:
                 inputs, labels = data
+                inputs=inputs.to(device)
+                labels=labels.to(device)
                 optimizer.zero_grad()
                 outputs = model(inputs)
                 loss = criterion(outputs, labels)
@@ -86,7 +98,7 @@ class ModelTrainer(object):
                 optimizer.step()
                 running_loss += loss.item()
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(self.data_loader)}")
-            (acc,acc_sud) = self.Test(model)
+            (acc,acc_sud) = self.Test(model,device)
             print(f"Epoch {epoch + 1}/{epochs}, Accuracy on the test set: {acc * 100:.2f}%")
             print(f"Epoch {epoch + 1}/{epochs}, Accuracy on the sudoku set: {acc_sud * 100:.2f}%")
             if decision_mode == "both":
@@ -103,4 +115,4 @@ class ModelTrainer(object):
                     best_model = model
         print(f"Best accuracy on the test set: {best_score_test * 100:.2f}%")
         print(f"Best accuracy on the sudoku set: {best_score_sudoku * 100:.2f}%")
-        return (best_score_test, best_score_sudoku ,best_model)
+        return (best_score_test, best_score_sudoku ,best_model.to(torch.device("cpu")))
