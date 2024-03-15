@@ -28,7 +28,7 @@ class VeryComplexNN(nn.Module):
         self.relu2 = nn.ReLU()
         self.fc3 = nn.Linear(256, 128)
         self.relu3 = nn.ReLU()
-        self.fc4 = nn.Linear(128, 11)
+        self.fc4 = nn.Linear(128, 10)
 
     def forward(self, x):
         x = x.view(-1, 28 * 28)

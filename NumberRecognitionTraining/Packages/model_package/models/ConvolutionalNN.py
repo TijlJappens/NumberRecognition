@@ -11,7 +11,7 @@ class ConvolutionalNN(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         # Define the fully connected layers
         self.fc1 = nn.Linear(32 * 7 * 7, 128)
-        self.fc2 = nn.Linear(128, 11)  # Output layer with 11 classes
+        self.fc2 = nn.Linear(128, 10)  # Output layer with 10 classes
 
     def forward(self, x):
         x = torch.unsqueeze(x, dim=-3)

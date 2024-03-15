@@ -6,7 +6,7 @@ class SimpleNN(nn.Module):
         super(SimpleNN, self).__init__()
         self.fc1 = nn.Linear(28 * 28, 128)
         self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(128, 11)
+        self.fc2 = nn.Linear(128, 10)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):

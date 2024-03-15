@@ -6,10 +6,6 @@ import os.path
 import copy
 
 class SudokuImageProcessor(ImageLoader):
-    cropped_images_list = [[None]*9 for _ in range(9)]
-    number_list = None
-    gray = None
-
     def __init__(self,image_path,number_path=None):
         # Convert the image to grayscale
         image = cv2.imread(image_path)
@@ -17,6 +13,7 @@ class SudokuImageProcessor(ImageLoader):
         self.gray = self.cropAll(self.gray)
         self.gray=cv2.bitwise_not(self.gray)
         self.number_path = number_path
+        self.cropped_images_list = [[None]*9 for _ in range(9)]
         if number_path != None:
             if os.path.exists(number_path):
                 self.number_list = np.load(number_path)
@@ -45,10 +42,10 @@ class SudokuImageProcessor(ImageLoader):
         prediction_list = np.zeros((9,9), dtype=int)
         for i in range(9):
             for j in range(9):
-                n = int(torch.argmax(model(torch.from_numpy(np.array(self.cropped_images_list[j][i])).float())).item())
-                if n==10:
-                    prediction_list[j][i] = 0
+                if np.all(np.array(self.cropped_images_list[j][i])==0):
+                    prediction_list[j][i] = 10
                 else:
+                    n = int(torch.argmax(model(torch.from_numpy(np.array(self.cropped_images_list[j][i])).float())).item())
                     prediction_list[j][i] = n
         return prediction_list
 
@@ -68,9 +65,9 @@ class SudokuImageProcessor(ImageLoader):
         test_labels = []
         for i in range(9):
             for j in range(9):
-                test_data.append(self.cropped_images_list[j][i])
                 if (self.number_list[j][i] == 0) | (self.number_list[j][i] == 10):
-                    test_labels.append(10)
+                    pass
                 else:
+                    test_data.append(self.cropped_images_list[j][i])
                     test_labels.append(self.number_list[j][i])
         return (test_data,test_labels)
