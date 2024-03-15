@@ -49,7 +49,7 @@ class ModelTrainer(object):
                 total_sudoku += labels.size(0)
                 correct_sudoku += (predicted == labels).sum().item()
         return (correct / total,correct_sudoku / total_sudoku)
-    def OneSeedProgram(self,i,epochs, decision_mode = "both", model_mode = 'ConvolutionalNN'):
+    def OneSeedProgram(self,i,epochs, decision_mode = "both", model_mode = 'ConvolutionalNN', width = 28):
         if not ((decision_mode=="both")|(decision_mode=="sudoku_only")):
             print("Wrong optional parameter: decision_mode.")
             return
@@ -61,9 +61,9 @@ class ModelTrainer(object):
 
         # Initialize the neural network, loss function, and optimizer
         if model_mode=="ConvolutionalNN":
-            model = ConvolutionalNN()
+            model = ConvolutionalNN(width)
         elif model_mode=="ComplexNN":
-            model = ComplexNN()
+            model = ComplexNN(width)
         
         criterion = nn.CrossEntropyLoss(weight = torch.FloatTensor(self.w))
         # Define your optimizer with L2 regularization (weight decay)

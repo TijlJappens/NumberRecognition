@@ -2,9 +2,10 @@ import torch.nn as nn
 
 # Define a more complicated neural network architecture
 class ComplexNN(nn.Module):
-    def __init__(self):
+    def __init__(self, width = 28):
         super(ComplexNN, self).__init__()
-        self.fc1 = nn.Linear(28 * 28, 256)
+        self.width=width
+        self.fc1 = nn.Linear(self.width * self.width, 256)
         self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(256, 128)
         self.relu2 = nn.ReLU()
@@ -20,9 +21,10 @@ class ComplexNN(nn.Module):
         return x
 # Just one more layer bro
 class VeryComplexNN(nn.Module):
-    def __init__(self):
+    def __init__(self, width = 28):
         super(VeryComplexNN, self).__init__()
-        self.fc1 = nn.Linear(28 * 28, 512)
+        self.width=width
+        self.fc1 = nn.Linear(self.width * self.width, 512)
         self.relu1 = nn.ReLU()
         self.fc2 = nn.Linear(512, 256)
         self.relu2 = nn.ReLU()

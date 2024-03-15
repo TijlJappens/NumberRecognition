@@ -6,17 +6,19 @@ import struct
 from array import array
 from os.path  import join
 from .ImageLoader import *
+import cv2
 
 #
 # MNIST Data Loader Class
 #
 class MnistDataloader(ImageLoader):
     def __init__(self, training_images_filepath,training_labels_filepath,
-                 test_images_filepath, test_labels_filepath):
+                 test_images_filepath, test_labels_filepath, width=28):
         self.training_images_filepath = training_images_filepath
         self.training_labels_filepath = training_labels_filepath
         self.test_images_filepath = test_images_filepath
         self.test_labels_filepath = test_labels_filepath
+        self.width=width
     def read_images_labels(self, images_filepath, labels_filepath):        
         labels = []
         with open(labels_filepath, 'rb') as file:
@@ -36,6 +38,8 @@ class MnistDataloader(ImageLoader):
         for i in range(size):
             img = np.array(image_data[i * rows * cols:(i + 1) * rows * cols])
             img = img.reshape((28, 28))
+            if self.width!=28:
+                img= np.array(cv2.resize(img,(self.width,self.width)))
             images[i] = img
         
         return images, labels
@@ -54,11 +58,13 @@ class MnistDataloader(ImageLoader):
             image_data = array("B", file.read())        
         images = []
         for i in range(size):
-            images.append(np.zeros((28, 28)))
+            images.append(np.zeros((self.width, self.width)))
         for i in range(size):
             img = np.array(image_data[i * rows * cols:(i + 1) * rows * cols])
             img = img.reshape((28, 28))
-            images[i] = self.cropAndFill(img,28,28)        
+            if self.width!=28:
+                img= np.array(cv2.resize(img,(self.width,self.width)))
+            images[i] = self.cropAndFill(img,self.width,self.width)        
         
         return images, labels
             

@@ -6,7 +6,8 @@ import os.path
 import copy
 
 class SudokuImageProcessor(ImageLoader):
-    def __init__(self,image_path,number_path=None):
+    def __init__(self,image_path,number_path=None,width=28):
+        self.width=width
         # Convert the image to grayscale
         image = cv2.imread(image_path)
         self.gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -36,7 +37,7 @@ class SudokuImageProcessor(ImageLoader):
         # Downscale the images and crop and fill
         for i in range(9):
             for j in range(9):
-                self.cropped_images_list[j][i] = self.cropAndFill(cv2.resize(self.cropped_images_list[j][i], (28, 28)),28,28)
+                self.cropped_images_list[j][i] = self.cropAndFill(cv2.resize(self.cropped_images_list[j][i], (self.width, self.width)),self.width,self.width)
 
     def predictions(self,model):
         prediction_list = np.zeros((9,9), dtype=int)

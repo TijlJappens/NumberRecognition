@@ -7,7 +7,7 @@ class ImageLoader(object):
     def crop(self, image):
         np_image = np.array(image)
         if np.all(np_image==0):
-            return np.zeros((28,28))
+            return np.zeros((self.width,self.width))
         #find left most margin
         leftmargin = 0
         for i in range(len(np_image[0,:])):
@@ -58,7 +58,7 @@ class ImageLoader(object):
         cropped_image = self.cropAll(image)
         np_cropped_image = np.array(cropped_image)
         if np_cropped_image.size==0:
-            return np.zeros((28,28), dtype=int)
+            return np.zeros((self.width,self.width), dtype=int)
         x_crop = len(np_cropped_image[0,:])
         y_crop = len(np_cropped_image[:,0])
         x_left = int((x-x_crop)/2)
